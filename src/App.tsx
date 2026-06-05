@@ -7,14 +7,11 @@ import { useEffect } from "react"
 const MOTION_PATTERNS: Record<string, MotionPattern> = {
   傾き上方向: "uphill",
   ホッピング: "hopping",
-  円運動: "circle",
-  左右往復: "leftRight",
-  "8の字": "figure8",
-  ランダム: "randomWalk",
 }
 
 export function App() {
   const setMotionPattern = useSimulationStore((s) => s.setMotionPattern)
+  const resetRobot = useSimulationStore((s) => s.resetRobot)
   const tiltX = useSimulationStore((s) => s.tiltX)
   const tiltZ = useSimulationStore((s) => s.tiltZ)
 
@@ -90,6 +87,28 @@ export function App() {
         <div>Z: {radToDeg(tiltZ).toFixed(2)}°</div>
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 6, paddingTop: 6, color: "#aaa", fontSize: 11 }}>円盤質量: {diskMass.toFixed(1)} kg</div>
       </div>
+
+      <button
+        onClick={resetRobot}
+        style={{
+          position: "absolute",
+          bottom: 16,
+          right: 8,
+          transform: "translateX(-50%)",
+          background: "rgba(159, 17, 17, 0.6)",
+          color: "#ffffff",
+          fontFamily: "monospace",
+          fontSize: 13,
+          padding: "8px 24px",
+          borderRadius: 6,
+          border: "1px solid rgba(255,255,255,0.25)",
+          cursor: "pointer",
+          backdropFilter: "blur(4px)",
+          letterSpacing: "0.05em",
+        }}
+      >
+        RESET
+      </button>
     </div>
   )
 }

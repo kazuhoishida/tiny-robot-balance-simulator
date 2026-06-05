@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { RigidBody, BallCollider, RapierRigidBody } from '@react-three/rapier'
 import { useRobotMotion } from '../hooks/useRobotMotion'
 import { useSimulationStore } from '../stores/simulationStore'
@@ -13,6 +13,17 @@ interface Props {
 export function Robot({ radius, mass, speed, friction }: Props) {
   const robotRef = useRef<RapierRigidBody>(null)
   const motionPattern = useSimulationStore((s) => s.motionPattern)
+  const setResetRobot = useSimulationStore((s) => s.setResetRobot)
+
+  useEffect(() => {
+    setResetRobot(() => {
+      const body = robotRef.current
+      if (!body) return
+      body.setTranslation({ x: 1, y: radius + 0.1, z: 0 }, true)
+      body.setLinvel({ x: 0, y: 0, z: 0 }, true)
+      body.setAngvel({ x: 0, y: 0, z: 0 }, true)
+    })
+  }, [radius, setResetRobot])
 
   useRobotMotion({ robotRef, pattern: motionPattern, speed })
 
