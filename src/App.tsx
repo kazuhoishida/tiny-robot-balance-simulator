@@ -9,7 +9,7 @@ const MOTION_PATTERNS: Record<string, MotionPattern> = {
   ホッピング: "hopping",
 }
 
-const ROBOT_RADIUS = 0.05
+const ROBOT_RADIUS = 0.04
 
 function randomRobot(diskRadiusM: number): RobotConfig {
   const angle = Math.random() * Math.PI * 2
@@ -28,7 +28,7 @@ export function App() {
   const tiltZ = useSimulationStore((s) => s.tiltZ)
 
   const diskParams = useControls("円盤 (CFRP)", {
-    radius: { value: 3000, min: 500, max: 8000, step: 100, label: "半径 (mm)" },
+    radius: { value: 2800, min: 500, max: 8000, step: 100, label: "半径 (mm)" },
     thickness: { value: 5, min: 1, max: 300, step: 1, label: "厚み (mm)" },
     density: { value: 1400, min: 1000, max: 1700, step: 10, label: "密度 (kg/m³)" },
     pivotDamping: { value: 1.1, min: 0, max: 10, step: 0.1, label: "支点摩擦" },
@@ -45,9 +45,7 @@ export function App() {
     },
   })
 
-  const { debug } = useControls("表示", {
-    debug: { value: false, label: "デバッグ表示" },
-  })
+  const [debug, setDebug] = useState(false)
 
   const noiseConfig = useControls("ノイズ", {
     enabled: { value: false, label: "ノイズ" },
@@ -109,6 +107,12 @@ export function App() {
         </button>
         <button style={{ ...btnStyle, border: "1px solid rgba(255,100,100,0.4)" }} onClick={resetAllRobots}>
           RESTART
+        </button>
+        <button
+          style={{ ...btnStyle, border: debug ? "1px solid rgba(0,255,136,0.6)" : "1px solid rgba(255,255,255,0.25)", color: debug ? "#00ff88" : "#ffffff" }}
+          onClick={() => setDebug((v) => !v)}
+        >
+          DEBUG
         </button>
       </div>
 

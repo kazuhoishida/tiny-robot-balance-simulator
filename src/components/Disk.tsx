@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import { RigidBody, CylinderCollider, RapierRigidBody } from "@react-three/rapier"
 import { useFrame } from "@react-three/fiber"
 import { useSimulationStore } from "../stores/simulationStore"
@@ -14,6 +14,12 @@ interface Props {
 export function Disk({ radius, thickness, mass, friction, pivotDamping }: Props) {
   const diskRef = useRef<RapierRigidBody>(null)
   const setTilt = useSimulationStore((s) => s.setTilt)
+  const setDiskBody = useSimulationStore((s) => s.setDiskBody)
+
+  useEffect(() => {
+    setDiskBody(diskRef.current)
+    return () => setDiskBody(null)
+  }, [])
 
   useFrame(() => {
     const body = diskRef.current

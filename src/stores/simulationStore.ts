@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { RapierRigidBody } from '@react-three/rapier'
 
 export type MotionPattern = 'uphill' | 'hopping'
 
@@ -12,6 +13,8 @@ interface SimulationStore {
   registerRobotReset: (id: string, fn: () => void) => void
   unregisterRobotReset: (id: string) => void
   resetAllRobots: () => void
+  diskBody: RapierRigidBody | null
+  setDiskBody: (body: RapierRigidBody | null) => void
 }
 
 export const useSimulationStore = create<SimulationStore>((set, get) => ({
@@ -32,4 +35,6 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
   resetAllRobots: () => {
     Object.values(get().robotResets).forEach((fn) => fn())
   },
+  diskBody: null,
+  setDiskBody: (body) => set({ diskBody: body }),
 }))

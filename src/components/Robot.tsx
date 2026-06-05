@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react'
 import { RigidBody, BallCollider, RapierRigidBody } from '@react-three/rapier'
 import { useRobotMotion } from '../hooks/useRobotMotion'
 import { useSimulationStore } from '../stores/simulationStore'
+import { TrailRenderer } from './TrailRenderer'
 
 interface Props {
   id: string
@@ -12,9 +13,10 @@ interface Props {
   speed: number
   noise: number
   friction: number
+  showTrail: boolean
 }
 
-export function Robot({ id, initX, initZ, radius, mass, speed, noise, friction }: Props) {
+export function Robot({ id, initX, initZ, radius, mass, speed, noise, friction, showTrail }: Props) {
   const robotRef = useRef<RapierRigidBody>(null)
   const motionPattern = useSimulationStore((s) => s.motionPattern)
   const registerRobotReset = useSimulationStore((s) => s.registerRobotReset)
@@ -31,22 +33,25 @@ export function Robot({ id, initX, initZ, radius, mass, speed, noise, friction }
     return () => unregisterRobotReset(id)
   }, [id, initX, initZ, radius, registerRobotReset, unregisterRobotReset])
 
-  useRobotMotion({ robotRef, pattern: motionPattern, speed, noise })
+  useRobotMotion({ robotRef, pattern: motionPattern, speed, noise, initX, initZ })
 
   return (
-    <RigidBody
-      ref={robotRef}
-      position={[initX, radius + 0.1, initZ]}
-      colliders={false}
-      mass={mass}
-      linearDamping={1}
-      angularDamping={1}
-    >
-      <BallCollider args={[radius]} friction={friction} restitution={0} />
-      <mesh castShadow>
-        <sphereGeometry args={[radius, 32, 32]} />
-        <meshStandardMaterial color="#fff" metalness={0.2} roughness={0.5} />
-      </mesh>
-    </RigidBody>
+    <>
+      <RigidBody
+        ref={robotRef}
+        position={[initX, radius + 0.1, initZ]}
+        colliders={false}
+        mass={mass}
+        linearDamping={1}
+        angularDamping={1}
+      >
+        <BallCollider args={[radius]} friction={friction} restitution={0} />
+        <mesh castShadow>
+          <sphereGeometry args={[radius, 32, 32]} />
+          <meshStandardMaterial color="#fff" metalness={0.2} roughness={0.5} />
+        </mesh>
+      </RigidBody>
+      {showTrail && <TrailRenderer bodyRef={robotRef} color="#ff3333" />}
+    </>
   )
 }
