@@ -4,33 +4,39 @@ import { useRobotMotion } from '../hooks/useRobotMotion'
 import { useSimulationStore } from '../stores/simulationStore'
 
 interface Props {
+  id: string
+  initX: number
+  initZ: number
   radius: number
   mass: number
   speed: number
+  noise: number
   friction: number
 }
 
-export function Robot({ radius, mass, speed, friction }: Props) {
+export function Robot({ id, initX, initZ, radius, mass, speed, noise, friction }: Props) {
   const robotRef = useRef<RapierRigidBody>(null)
   const motionPattern = useSimulationStore((s) => s.motionPattern)
-  const setResetRobot = useSimulationStore((s) => s.setResetRobot)
+  const registerRobotReset = useSimulationStore((s) => s.registerRobotReset)
+  const unregisterRobotReset = useSimulationStore((s) => s.unregisterRobotReset)
 
   useEffect(() => {
-    setResetRobot(() => {
+    registerRobotReset(id, () => {
       const body = robotRef.current
       if (!body) return
-      body.setTranslation({ x: 1, y: radius + 0.1, z: 0 }, true)
+      body.setTranslation({ x: initX, y: radius + 0.1, z: initZ }, true)
       body.setLinvel({ x: 0, y: 0, z: 0 }, true)
       body.setAngvel({ x: 0, y: 0, z: 0 }, true)
     })
-  }, [radius, setResetRobot])
+    return () => unregisterRobotReset(id)
+  }, [id, initX, initZ, radius, registerRobotReset, unregisterRobotReset])
 
-  useRobotMotion({ robotRef, pattern: motionPattern, speed })
+  useRobotMotion({ robotRef, pattern: motionPattern, speed, noise })
 
   return (
     <RigidBody
       ref={robotRef}
-      position={[1, radius + 0.1, 0]}
+      position={[initX, radius + 0.1, initZ]}
       colliders={false}
       mass={mass}
       linearDamping={1}

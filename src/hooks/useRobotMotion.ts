@@ -7,13 +7,14 @@ interface Props {
   robotRef: React.RefObject<RapierRigidBody | null>
   pattern: MotionPattern
   speed: number
+  noise: number
 }
 
 const UPHILL_SCALE = 3
 const HOP_INTERVAL = 0.65
 const HOP_VELOCITY = 3.5
 
-export function useRobotMotion({ robotRef, pattern, speed }: Props) {
+export function useRobotMotion({ robotRef, pattern, speed, noise }: Props) {
   const hopTimerRef = useRef(0)
 
   useFrame((_, delta) => {
@@ -39,11 +40,17 @@ export function useRobotMotion({ robotRef, pattern, speed }: Props) {
       }
     }
 
+    // Directional velocity with optional direction noise
+    let vx = 0
+    let vz = 0
     if (tiltMag > 0.005) {
       const v = tiltMag * UPHILL_SCALE * speed
-      body.setLinvel({ x: (dx / tiltMag) * v, y: vy, z: (dz / tiltMag) * v }, true)
-    } else {
-      body.setLinvel({ x: 0, y: vy, z: 0 }, true)
+      const baseAngle = Math.atan2(dz, dx)
+      const noisyAngle = baseAngle + (Math.random() - 0.5) * noise * Math.PI
+      vx = Math.cos(noisyAngle) * v
+      vz = Math.sin(noisyAngle) * v
     }
+
+    body.setLinvel({ x: vx, y: vy, z: vz }, true)
   })
 }

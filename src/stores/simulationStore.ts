@@ -1,6 +1,6 @@
-import { create } from "zustand"
+import { create } from 'zustand'
 
-export type MotionPattern = "uphill" | "hopping"
+export type MotionPattern = 'uphill' | 'hopping'
 
 interface SimulationStore {
   tiltX: number
@@ -8,16 +8,28 @@ interface SimulationStore {
   setTilt: (x: number, z: number) => void
   motionPattern: MotionPattern
   setMotionPattern: (pattern: MotionPattern) => void
-  resetRobot: () => void
-  setResetRobot: (fn: () => void) => void
+  robotResets: Record<string, () => void>
+  registerRobotReset: (id: string, fn: () => void) => void
+  unregisterRobotReset: (id: string) => void
+  resetAllRobots: () => void
 }
 
-export const useSimulationStore = create<SimulationStore>((set) => ({
+export const useSimulationStore = create<SimulationStore>((set, get) => ({
   tiltX: 0,
   tiltZ: 0,
   setTilt: (x, z) => set({ tiltX: x, tiltZ: z }),
-  motionPattern: "uphill",
+  motionPattern: 'uphill',
   setMotionPattern: (pattern) => set({ motionPattern: pattern }),
-  resetRobot: () => {},
-  setResetRobot: (fn) => set({ resetRobot: fn }),
+  robotResets: {},
+  registerRobotReset: (id, fn) =>
+    set((s) => ({ robotResets: { ...s.robotResets, [id]: fn } })),
+  unregisterRobotReset: (id) =>
+    set((s) => {
+      const next = { ...s.robotResets }
+      delete next[id]
+      return { robotResets: next }
+    }),
+  resetAllRobots: () => {
+    Object.values(get().robotResets).forEach((fn) => fn())
+  },
 }))

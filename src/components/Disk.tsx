@@ -33,9 +33,10 @@ export function Disk({ radius, thickness, mass, friction, pivotDamping }: Props)
         <cylinderGeometry args={[radius, radius, thickness, 64]} />
         <meshStandardMaterial color="#424242" metalness={0.2} roughness={0.35} />
       </mesh>
+
       <mesh position={[0, thickness / 2 + 0.01, 0]}>
-        <cylinderGeometry args={[0.02, 0.02, 0.02, 16]} />
-        <meshStandardMaterial color="#ffffff" />
+        <cylinderGeometry args={[0.03, 0.03, 0.02, 16]} />
+        <meshStandardMaterial color="#cdbf6f" />
       </mesh>
     </RigidBody>
   )

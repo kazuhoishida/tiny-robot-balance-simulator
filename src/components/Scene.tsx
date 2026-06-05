@@ -9,6 +9,12 @@ import { DebugHelpers } from "./DebugHelpers"
 import { PhysicsFloor } from "./PhysicsFloor"
 import { Figure } from "./Figure"
 
+export interface RobotConfig {
+  id: string
+  initX: number
+  initZ: number
+}
+
 interface SceneParams {
   disk: {
     radius: number
@@ -21,7 +27,9 @@ interface SceneParams {
     radius: number
     mass: number
     speed: number
+    noise: number
   }
+  robots: RobotConfig[]
   debug: boolean
 }
 
@@ -42,7 +50,19 @@ export function Scene({ params }: Props) {
       <Suspense fallback={null}>
         <Physics gravity={[0, -9.81, 0]}>
           <Disk radius={params.disk.radius} thickness={params.disk.thickness} mass={params.disk.mass} friction={params.disk.friction} pivotDamping={params.disk.pivotDamping} />
-          <Robot radius={params.robot.radius} mass={params.robot.mass} speed={params.robot.speed} friction={params.disk.friction} />
+          {params.robots.map((r) => (
+            <Robot
+              key={r.id}
+              id={r.id}
+              initX={r.initX}
+              initZ={r.initZ}
+              radius={params.robot.radius}
+              mass={params.robot.mass}
+              speed={params.robot.speed}
+              noise={params.robot.noise}
+              friction={params.disk.friction}
+            />
+          ))}
           <DebugHelpers diskRadius={params.disk.radius} diskThickness={params.disk.thickness} show={params.debug} />
           <PhysicsFloor />
         </Physics>
