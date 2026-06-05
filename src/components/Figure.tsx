@@ -7,12 +7,10 @@ export function Figure() {
   const { scene } = useGLTF("/figure/rp_posed_00178_29.glb")
 
   useMemo(() => {
-    scene.traverse((child) => {
-      if (child instanceof Mesh) child.castShadow = true
-    })
+    scene.traverse((child) => (child.castShadow = child instanceof Mesh))
   }, [scene])
 
-  return <primitive object={scene} position={[-1.5, GROUND_Y, 4]} scale={10} rotation={[0, Math.PI * 0.9, 0]} />
+  return <primitive object={scene} position={[-1.5, GROUND_Y, 4]} scale={10} rotation={[0, Math.PI * 0.8, 0]} />
 }
 
 useGLTF.preload("/figure/rp_posed_00178_29.glb")

@@ -1,7 +1,7 @@
-import { create } from 'zustand'
-import type { RapierRigidBody } from '@react-three/rapier'
+import { create } from "zustand"
+import type { RapierRigidBody } from "@react-three/rapier"
 
-export type MotionPattern = 'uphill' | 'hopping'
+export type MotionPattern = "uphill" | "hopping"
 
 interface SimulationStore {
   tiltX: number
@@ -21,11 +21,10 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
   tiltX: 0,
   tiltZ: 0,
   setTilt: (x, z) => set({ tiltX: x, tiltZ: z }),
-  motionPattern: 'uphill',
+  motionPattern: "uphill",
   setMotionPattern: (pattern) => set({ motionPattern: pattern }),
   robotResets: {},
-  registerRobotReset: (id, fn) =>
-    set((s) => ({ robotResets: { ...s.robotResets, [id]: fn } })),
+  registerRobotReset: (id, fn) => set((s) => ({ robotResets: { ...s.robotResets, [id]: fn } })),
   unregisterRobotReset: (id) =>
     set((s) => {
       const next = { ...s.robotResets }

@@ -1,5 +1,5 @@
 import { Grid } from "@react-three/drei"
-import { FLOOR_Y } from "./PhysicsFloor"
+import { FLOOR_Y } from "./PedestalCollider"
 
 const PILLAR_HEIGHT = Math.abs(FLOOR_Y) / 2 // 0.3 m
 const PILLAR_CENTER_Y = -PILLAR_HEIGHT / 2 // -0.15 m

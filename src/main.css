@@ -1,0 +1,66 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* ── Buttons ── */
+
+.ui-buttons {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.ui-btn {
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.05em;
+}
+
+.ui-btn--restart {
+  border-color: rgba(255, 100, 100, 0.4);
+}
+
+.ui-btn--debug {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.ui-btn--debug.active {
+  border-color: rgba(0, 255, 136, 0.6);
+  color: #00ff88;
+}
+
+/* ── Tilt overlay ── */
+
+.ui-tilt {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #00ff88;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  line-height: 1.8;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.ui-tilt__label {
+  color: #aaa;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
