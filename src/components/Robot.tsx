@@ -11,12 +11,11 @@ interface Props {
   radius: number
   mass: number
   speed: number
-  noise: number
   friction: number
   showTrail: boolean
 }
 
-export function Robot({ id, initX, initZ, radius, mass, speed, noise, friction, showTrail }: Props) {
+export function Robot({ id, initX, initZ, radius, mass, speed, friction, showTrail }: Props) {
   const robotRef = useRef<RapierRigidBody>(null)
   const motionPattern = useSimulationStore((s) => s.motionPattern)
   const registerRobotReset = useSimulationStore((s) => s.registerRobotReset)
@@ -33,7 +32,7 @@ export function Robot({ id, initX, initZ, radius, mass, speed, noise, friction, 
     return () => unregisterRobotReset(id)
   }, [id, initX, initZ, radius, registerRobotReset, unregisterRobotReset])
 
-  useRobotMotion({ robotRef, pattern: motionPattern, speed, noise, initX, initZ })
+  useRobotMotion({ robotRef, pattern: motionPattern, speed, initX, initZ })
 
   return (
     <>

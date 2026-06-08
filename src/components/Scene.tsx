@@ -28,7 +28,6 @@ interface SceneParams {
     radius: number
     mass: number
     speed: number
-    noise: number
   }
   robots: RobotConfig[]
   debug: boolean

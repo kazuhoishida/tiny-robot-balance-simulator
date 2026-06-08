@@ -4,6 +4,8 @@ import { Scene, RobotConfig } from "./components/Scene"
 import { UI } from "./components/UI"
 import { useSimulationStore, MotionPattern } from "./stores/simulationStore"
 
+const ROBOT_RADIUS = 0.04 // m
+
 const MOTION_PATTERNS: Record<string, MotionPattern> = {
   傾き上方向: "uphill",
   ホッピング: "hopping",
@@ -32,7 +34,6 @@ export function App() {
   })
 
   const robotConfig = useControls("ロボット", {
-    radius: 50,
     mass: { value: 50, min: 1, max: 2000, step: 1, label: "質量 (g)" },
     speed: { value: 1, min: 0.1, max: 5, step: 0.1, label: "移動速度" },
     motionPattern: {
@@ -40,11 +41,6 @@ export function App() {
       options: Object.keys(MOTION_PATTERNS),
       label: "移動パターン",
     },
-  })
-
-  const noiseConfig = useControls("ノイズ", {
-    enabled: { value: false, label: "ノイズ" },
-    intensity: { value: 0.02, min: 0, max: 0.5, step: 0.005, label: "強度" },
   })
 
   const [debug, setDebug] = useState(false)
@@ -68,10 +64,9 @@ export function App() {
       pivotDamping: diskParams.pivotDamping,
     },
     robot: {
-      radius: 0.04,
+      radius: ROBOT_RADIUS,
       mass: robotConfig.mass / 1000,
       speed: robotConfig.speed,
-      noise: noiseConfig.enabled ? noiseConfig.intensity : 0,
     },
     robots,
     debug,

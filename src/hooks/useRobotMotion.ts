@@ -7,7 +7,6 @@ interface Props {
   robotRef: React.RefObject<RapierRigidBody | null>
   pattern: MotionPattern
   speed: number
-  noise: number
   initX: number
   initZ: number
 }
@@ -18,7 +17,7 @@ const HOP_VELOCITY = 3.5
 const STARTUP_DURATION = 5.0 // seconds
 const INITIAL_PUSH_SPEED = 0.6 // m/s at t=0, fades to 0 over STARTUP_DURATION
 
-export function useRobotMotion({ robotRef, pattern, speed, noise, initX, initZ }: Props) {
+export function useRobotMotion({ robotRef, pattern, speed, initX, initZ }: Props) {
   const hopTimerRef = useRef(0)
   const elapsedRef = useRef(0)
 
@@ -57,9 +56,8 @@ export function useRobotMotion({ robotRef, pattern, speed, noise, initX, initZ }
     if (tiltMag > 0.005) {
       const v = tiltMag * UPHILL_SCALE * speed
       const baseAngle = Math.atan2(dz, dx)
-      const noisyAngle = baseAngle + (Math.random() - 0.5) * noise * Math.PI
-      vx = Math.cos(noisyAngle) * v
-      vz = Math.sin(noisyAngle) * v
+      vx = Math.cos(baseAngle) * v
+      vz = Math.sin(baseAngle) * v
     }
 
     // Initial outward push — fades linearly over STARTUP_DURATION
