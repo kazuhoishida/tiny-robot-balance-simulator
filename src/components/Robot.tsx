@@ -13,9 +13,10 @@ interface Props {
   speed: number
   friction: number
   showTrail: boolean
+  diskBodyRef: { current: RapierRigidBody | null }
 }
 
-export function Robot({ id, initX, initZ, radius, mass, speed, friction, showTrail }: Props) {
+export function Robot({ id, initX, initZ, radius, mass, speed, friction, showTrail, diskBodyRef }: Props) {
   const robotRef = useRef<RapierRigidBody>(null)
   const motionPattern = useSimulationStore((s) => s.motionPattern)
   const registerRobotReset = useSimulationStore((s) => s.registerRobotReset)
@@ -28,11 +29,12 @@ export function Robot({ id, initX, initZ, radius, mass, speed, friction, showTra
       body.setTranslation({ x: initX, y: radius + 0.1, z: initZ }, true)
       body.setLinvel({ x: 0, y: 0, z: 0 }, true)
       body.setAngvel({ x: 0, y: 0, z: 0 }, true)
+      resetMotion()
     })
     return () => unregisterRobotReset(id)
   }, [id, initX, initZ, radius, registerRobotReset, unregisterRobotReset])
 
-  useRobotMotion({ robotRef, pattern: motionPattern, speed, initX, initZ })
+  const { reset: resetMotion } = useRobotMotion({ robotRef, diskBodyRef, pattern: motionPattern, speed, initX, initZ })
 
   return (
     <>
@@ -50,7 +52,7 @@ export function Robot({ id, initX, initZ, radius, mass, speed, friction, showTra
           <meshStandardMaterial color="#fff" metalness={0.2} roughness={0.5} />
         </mesh>
       </RigidBody>
-      {showTrail && <TrailRenderer bodyRef={robotRef} color="#ff3333" />}
+      {showTrail && <TrailRenderer bodyRef={robotRef} diskBodyRef={diskBodyRef} color="#ff3333" />}
     </>
   )
 }

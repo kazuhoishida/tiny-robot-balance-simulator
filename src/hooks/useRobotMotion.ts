@@ -1,10 +1,11 @@
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import { RapierRigidBody } from "@react-three/rapier"
-import { MotionPattern, useSimulationStore } from "../stores/simulationStore"
+import { MotionPattern } from "../stores/simulationStore"
 
 interface Props {
   robotRef: React.RefObject<RapierRigidBody | null>
+  diskBodyRef: { current: RapierRigidBody | null }
   pattern: MotionPattern
   speed: number
   initX: number
@@ -14,14 +15,13 @@ interface Props {
 const UPHILL_SCALE = 3
 const HOP_INTERVAL = 0.65
 const HOP_VELOCITY = 3.5
-const STARTUP_DURATION = 5.0 // seconds
-const INITIAL_PUSH_SPEED = 0.6 // m/s at t=0, fades to 0 over STARTUP_DURATION
+const STARTUP_DURATION = 3.0
+const INITIAL_PUSH_SPEED = 0.5
 
-export function useRobotMotion({ robotRef, pattern, speed, initX, initZ }: Props) {
+export function useRobotMotion({ robotRef, diskBodyRef, pattern, speed, initX, initZ }: Props) {
   const hopTimerRef = useRef(0)
   const elapsedRef = useRef(0)
 
-  // Tangent direction: perpendicular to radial direction (rotate 90°)
   const len = Math.sqrt(initX * initX + initZ * initZ)
   const outX = len > 0.001 ? -initZ / len : 1
   const outZ = len > 0.001 ? initX / len : 0
@@ -32,10 +32,21 @@ export function useRobotMotion({ robotRef, pattern, speed, initX, initZ }: Props
 
     elapsedRef.current += delta
 
-    const { tiltX, tiltZ } = useSimulationStore.getState()
-    const dx = Math.sin(tiltZ)
-    const dz = -Math.sin(tiltX)
-    const tiltMag = Math.sqrt(dx * dx + dz * dz)
+    // Compute uphill direction from the disk's world-space surface normal.
+    // Rotating local Y by quaternion q gives: n_x = 2(qx·qy - qw·qz), n_z = 2(qy·qz + qw·qx).
+    // This is invariant to the RigidBody's initial Y rotation, unlike Euler extraction.
+    let dx = 0,
+      dz = 0,
+      tiltMag = 0
+    const disk = diskBodyRef.current
+    if (disk) {
+      const { x: qx, y: qy, z: qz, w: qw } = disk.rotation()
+      const nx = 2 * (qx * qy - qw * qz)
+      const nz = 2 * (qy * qz + qw * qx)
+      dx = -nx
+      dz = -nz
+      tiltMag = Math.sqrt(nx * nx + nz * nz)
+    }
 
     let vy = body.linvel().y
 
@@ -60,14 +71,20 @@ export function useRobotMotion({ robotRef, pattern, speed, initX, initZ }: Props
       vz = Math.sin(baseAngle) * v
     }
 
-    // Initial outward push — fades linearly over STARTUP_DURATION
     if (elapsedRef.current < STARTUP_DURATION) {
       const t = elapsedRef.current / STARTUP_DURATION
       const push = (1 - t) * INITIAL_PUSH_SPEED
-      vx += outX * push
-      vz += outZ * push
+      vx += outX * push + Math.random() * 0.1
+      vz += outZ * push + Math.random() * 0.1
     }
 
     body.setLinvel({ x: vx, y: vy, z: vz }, true)
   })
+
+  return {
+    reset: () => {
+      elapsedRef.current = 0
+      hopTimerRef.current = 0
+    },
+  }
 }

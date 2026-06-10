@@ -1,8 +1,7 @@
 import { Grid } from "@react-three/drei"
 import { FLOOR_Y } from "./PedestalCollider"
 
-const PILLAR_HEIGHT = Math.abs(FLOOR_Y) / 2 // 0.3 m
-const PILLAR_CENTER_Y = -PILLAR_HEIGHT / 2 // -0.15 m
+export const PILLAR_HEIGHT = Math.abs(FLOOR_Y) / 2 // 0.3 m
 
 const PEDESTAL_THICKNESS = 0.35
 const PEDESTAL_TOP_Y = -PILLAR_HEIGHT // -0.3 m
@@ -26,12 +25,6 @@ export function Ground() {
       <mesh position={[0, PEDESTAL_CENTER_Y, 0]} receiveShadow castShadow>
         <cylinderGeometry args={[PEDESTAL_RADIUS * 0.96, PEDESTAL_RADIUS, PEDESTAL_THICKNESS, 128]} />
         <meshStandardMaterial color="#c3c3c3" roughness={0.8} metalness={0.1} />
-      </mesh>
-
-      {/* Central pivot pillar */}
-      <mesh position={[0, PILLAR_CENTER_Y, 0]}>
-        <cylinderGeometry args={[0.01, 0.04, PILLAR_HEIGHT, 12]} />
-        <meshStandardMaterial color="#aaaaaa" metalness={0.7} roughness={0.3} />
       </mesh>
     </>
   )

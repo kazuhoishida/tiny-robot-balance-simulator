@@ -3,18 +3,11 @@ import { Physics } from "@react-three/rapier"
 import { Suspense } from "react"
 import { Camera } from "./Camera"
 import { Disk } from "./Disk"
-import { Robot } from "./Robot"
 import { Ground } from "./Ground"
 import { DebugHelpers } from "./DebugHelpers"
 import { PedestalCollider } from "./PedestalCollider"
 import { Figure } from "./Figure"
 import { Lights } from "./Lights"
-
-export interface RobotConfig {
-  id: string
-  initX: number
-  initZ: number
-}
 
 interface SceneParams {
   disk: {
@@ -29,7 +22,6 @@ interface SceneParams {
     mass: number
     speed: number
   }
-  robots: RobotConfig[]
   debug: boolean
 }
 
@@ -37,10 +29,10 @@ function SimulationWorld({ params }: { params: SceneParams }) {
   return (
     <Suspense fallback={null}>
       <Physics gravity={[0, -9.81, 0]}>
-        <Disk {...params.disk} />
-        {params.robots.map((r) => (
-          <Robot key={r.id} {...r} {...params.robot} friction={params.disk.friction} showTrail={params.debug} />
-        ))}
+        <Disk
+          {...params.disk}
+          robot={{ ...params.robot, showTrail: params.debug }}
+        />
         <DebugHelpers diskRadius={params.disk.radius} diskThickness={params.disk.thickness} show={params.debug} />
         <PedestalCollider />
       </Physics>

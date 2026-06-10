@@ -1,29 +1,25 @@
-import { useSimulationStore } from '../stores/simulationStore'
-import { radToDeg } from '../utils/math'
+import { useSimulationStore } from "../stores/simulationStore"
+import { radToDeg } from "../utils/math"
 
 interface Props {
   debug: boolean
   onToggleDebug: () => void
-  onAddRobot: () => void
   onRestart: () => void
 }
 
-export function UI({ debug, onToggleDebug, onAddRobot, onRestart }: Props) {
+export function UI({ debug, onToggleDebug, onRestart }: Props) {
   const tiltX = useSimulationStore((s) => s.tiltX)
   const tiltZ = useSimulationStore((s) => s.tiltZ)
 
   return (
     <>
       <div className="ui-buttons">
-        <button className="ui-btn" onClick={onAddRobot}>
-          + ロボット追加
-        </button>
         <button className="ui-btn ui-btn--restart" onClick={onRestart}>
           RESTART
         </button>
-        <button className={`ui-btn ui-btn--debug${debug ? ' active' : ''}`} onClick={onToggleDebug}>
+        {/* <button className={`ui-btn ui-btn--debug${debug ? ' active' : ''}`} onClick={onToggleDebug}>
           DEBUG
-        </button>
+        </button> */}
       </div>
 
       <div className="ui-tilt">

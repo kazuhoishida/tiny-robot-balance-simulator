@@ -2,7 +2,6 @@ import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { RapierRigidBody } from '@react-three/rapier'
-import { useSimulationStore } from '../stores/simulationStore'
 
 const SAMPLE_EVERY = 2
 const JUMP_THRESHOLD = 4
@@ -10,13 +9,14 @@ const INITIAL_CAPACITY = 600
 
 interface Props {
   bodyRef: React.RefObject<RapierRigidBody | null>
+  diskBodyRef: { current: RapierRigidBody | null }
   color?: string
 }
 
 const _invQ = new THREE.Quaternion()
 const _worldP = new THREE.Vector3()
 
-export function TrailRenderer({ bodyRef, color = '#ff3333' }: Props) {
+export function TrailRenderer({ bodyRef, diskBodyRef, color = '#ff3333' }: Props) {
   const dataRef = useRef<number[]>([])
   const frameRef = useRef(0)
   const capacityRef = useRef(INITIAL_CAPACITY)
@@ -35,9 +35,8 @@ export function TrailRenderer({ bodyRef, color = '#ff3333' }: Props) {
     const body = bodyRef.current
     if (!body) return
 
-    const diskBody = useSimulationStore.getState().diskBody
+    const diskBody = diskBodyRef.current
 
-    // Keep group rotation in sync with disk so local-space trail tilts with it
     if (groupRef.current && diskBody) {
       const dq = diskBody.rotation()
       groupRef.current.quaternion.set(dq.x, dq.y, dq.z, dq.w)
@@ -49,7 +48,6 @@ export function TrailRenderer({ bodyRef, color = '#ff3333' }: Props) {
     const p = body.translation()
     _worldP.set(p.x, p.y, p.z)
 
-    // Convert to disk-local space (disk center is always at world origin)
     if (diskBody) {
       const dq = diskBody.rotation()
       _invQ.set(dq.x, dq.y, dq.z, dq.w).invert()
@@ -58,7 +56,6 @@ export function TrailRenderer({ bodyRef, color = '#ff3333' }: Props) {
 
     const lx = _worldP.x, ly = _worldP.y, lz = _worldP.z
 
-    // Clear on RESTART (position jump in local space)
     const len = dataRef.current.length
     if (len >= 3) {
       const dx = lx - dataRef.current[len - 3]
@@ -72,7 +69,6 @@ export function TrailRenderer({ bodyRef, color = '#ff3333' }: Props) {
     dataRef.current.push(lx, ly, lz)
     const count = dataRef.current.length / 3
 
-    // Grow buffer if needed
     if (count > capacityRef.current) {
       capacityRef.current = Math.ceil(capacityRef.current * 1.5)
       const newArr = new Float32Array(capacityRef.current * 3)

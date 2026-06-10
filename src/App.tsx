@@ -1,6 +1,6 @@
 import { useControls } from "leva"
 import { useState, useEffect } from "react"
-import { Scene, RobotConfig } from "./components/Scene"
+import { Scene } from "./components/Scene"
 import { UI } from "./components/UI"
 import { useSimulationStore, MotionPattern } from "./stores/simulationStore"
 
@@ -11,31 +11,21 @@ const MOTION_PATTERNS: Record<string, MotionPattern> = {
   ホッピング: "hopping",
 }
 
-function randomRobot(diskRadiusM: number): RobotConfig {
-  const angle = Math.random() * Math.PI * 2
-  const r = Math.random() * diskRadiusM * 0.7
-  return {
-    id: `robot-${Date.now()}-${Math.random()}`,
-    initX: Math.cos(angle) * r,
-    initZ: Math.sin(angle) * r,
-  }
-}
-
 export function App() {
   const setMotionPattern = useSimulationStore((s) => s.setMotionPattern)
   const resetAllRobots = useSimulationStore((s) => s.resetAllRobots)
 
   const diskParams = useControls("円盤 (CFRP)", {
-    radius: { value: 2800, min: 500, max: 8000, step: 100, label: "半径 (mm)" },
+    radius: { value: 3500, min: 500, max: 8000, step: 100, label: "半径 (mm)" },
     thickness: { value: 5, min: 1, max: 300, step: 1, label: "厚み (mm)" },
     density: { value: 1400, min: 1000, max: 1700, step: 10, label: "密度 (kg/m³)" },
-    pivotDamping: { value: 1.1, min: 0, max: 10, step: 0.1, label: "支点摩擦" },
-    friction: { value: 0.8, min: 0, max: 1, step: 0.05, label: "摩擦" },
+    pivotDamping: { value: 0.7, min: 0, max: 10, step: 0.1, label: "支点摩擦" },
+    friction: { value: 0.0, min: 0, max: 1, step: 0.05, label: "摩擦" },
   })
 
   const robotConfig = useControls("ロボット", {
     mass: { value: 50, min: 1, max: 2000, step: 1, label: "質量 (g)" },
-    speed: { value: 1, min: 0.1, max: 5, step: 0.1, label: "移動速度" },
+    speed: { value: 0.5, min: 0.1, max: 5, step: 0.1, label: "移動速度" },
     motionPattern: {
       value: "傾き上方向",
       options: Object.keys(MOTION_PATTERNS),
@@ -44,7 +34,6 @@ export function App() {
   })
 
   const [debug, setDebug] = useState(false)
-  const [robots, setRobots] = useState<RobotConfig[]>([{ id: "robot-initial", initX: 1, initZ: 0 }])
 
   const diskRadiusM = diskParams.radius / 1000
   const diskThicknessM = diskParams.thickness / 1000
@@ -68,14 +57,13 @@ export function App() {
       mass: robotConfig.mass / 1000,
       speed: robotConfig.speed,
     },
-    robots,
     debug,
   }
 
   return (
     <div className="app">
       <Scene params={params} />
-      <UI debug={debug} onToggleDebug={() => setDebug((v) => !v)} onAddRobot={() => setRobots((prev) => [...prev, randomRobot(diskRadiusM)])} onRestart={resetAllRobots} />
+      <UI debug={debug} onToggleDebug={() => setDebug((v) => !v)} onRestart={resetAllRobots} />
     </div>
   )
 }
