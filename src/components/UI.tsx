@@ -7,7 +7,7 @@ interface Props {
   onRestart: () => void
 }
 
-export function UI({ debug, onToggleDebug, onRestart }: Props) {
+export function UI({ onRestart }: Props) {
   const tiltX = useSimulationStore((s) => s.tiltX)
   const tiltZ = useSimulationStore((s) => s.tiltZ)
 
@@ -17,9 +17,6 @@ export function UI({ debug, onToggleDebug, onRestart }: Props) {
         <button className="ui-btn ui-btn--restart" onClick={onRestart}>
           RESTART
         </button>
-        {/* <button className={`ui-btn ui-btn--debug${debug ? ' active' : ''}`} onClick={onToggleDebug}>
-          DEBUG
-        </button> */}
       </div>
 
       <div className="ui-tilt">
